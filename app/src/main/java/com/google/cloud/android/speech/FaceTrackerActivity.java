@@ -70,6 +70,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private VoiceRecorder mVoiceRecorder;
 
     private CameraSource mCameraSource = null;
+    //test stuff
+    private boolean spoken = false;
+    private String speechText = "";
 
     private CameraSourcePreview mPreview;
     private GraphicOverlay mGraphicOverlay;
@@ -367,7 +370,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
             mOverlay.add(mFaceGraphic);
-            mFaceGraphic.updateFace(face);
+            mFaceGraphic.updateFace(face, spoken, speechText);
         }
 
         /**
@@ -508,6 +511,13 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                    /* mText.setText(null);
                                     mAdapter.addResult(text);
                                     mRecyclerView.smoothScrollToPosition(0);*/
+                                   spoken = true;
+                                   speechText = text;
+                                    try {
+                                        mPreview.start(mCameraSource, mGraphicOverlay);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                     Log.d("Text String", "Test: " + text);
                                 } else {
                                     //mText.setText(text);
@@ -518,6 +528,4 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                     }
                 }
             };
-
-
 }
