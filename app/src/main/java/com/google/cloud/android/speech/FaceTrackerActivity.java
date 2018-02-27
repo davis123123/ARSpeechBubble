@@ -200,7 +200,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
         mCameraSource = new CameraSource.Builder(context, detector)
                 .setRequestedPreviewSize(640, 480)
-                .setFacing(CameraSource.CAMERA_FACING_BACK)
+                .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedFps(30.0f)
                 .build();
     }
@@ -508,9 +508,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                    /* mText.setText(null);
                                     mAdapter.addResult(text);
                                     mRecyclerView.smoothScrollToPosition(0);*/
+                                    Log.d("Text String", "Test: " + text);
                                 } else {
                                     //mText.setText(text);
-                                    Log.d("Text String", "Test: " + text);
+                                    //Log.d("Text String", "Test: " + text);
                                 }
                             }
                         });
