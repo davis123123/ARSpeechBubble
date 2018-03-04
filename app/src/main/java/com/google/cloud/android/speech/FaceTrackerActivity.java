@@ -73,6 +73,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     //test stuff
     private boolean spoken = false;
     private String speechText = "";
+    private boolean cameraBF = true;
 
     private CameraSourcePreview mPreview;
     private GraphicOverlay mGraphicOverlay;
@@ -94,7 +95,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.main);
-
+        mLinearLayout = (LinearLayout) findViewById(R.id.topLayout);
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
         // Check for the camera permission before accessing the camera.  If the
@@ -110,6 +111,14 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         final Runnable run = new Runnable() {
             @Override
             public void run() {
+                //mCameraSource.stop();
+                //mCameraSource.release();
+                int rc = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
+                if (rc == PackageManager.PERMISSION_GRANTED) {
+                    createCameraSourceBack();
+                } else {
+                    requestCameraPermission();
+                }
                 //Toast.makeText(getApplicationContext(),"TOUCHED AND WORKS!",Toast.LENGTH_LONG).show();
                 Log.d("Clicked","YES");
             }
@@ -119,26 +128,34 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
         final Handler handel = new Handler();
 
-        /*mLinearLayout.setOnTouchListener(new View.OnTouchListener() {
+        mLinearLayout.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View arg0, MotionEvent arg1) {
                 switch (arg1.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-
-                        handel.postDelayed(run, 3000);
+                        mCameraSource.release();
+                        if(cameraBF) {
+                            createCameraSourceBack();
+                            startCameraSource();
+                        }
+                        else{
+                            createCameraSource();
+                            startCameraSource();
+                        }
+                        //handel.postDelayed(run, 1000);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         //stop timer
-                        handel.removeCallbacks(run);
+                        //handel.removeCallbacks(run);
                         break;
 
                 }
                 return true;
             }
         });
-*/
+
     }
 
     /**
@@ -179,7 +196,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * at long distances.
      */
     private void createCameraSource() {
-
+        cameraBF = true;
         Context context = getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
@@ -208,6 +225,35 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 .build();
     }
 
+    private void createCameraSourceBack() {
+        cameraBF = false;
+        Context context = getApplicationContext();
+        FaceDetector detector = new FaceDetector.Builder(context)
+                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .build();
+
+        detector.setProcessor(
+                new MultiProcessor.Builder<>(new GraphicFaceTrackerFactory())
+                        .build());
+
+        if (!detector.isOperational()) {
+            // Note: The first time that an app using face API is installed on a device, GMS will
+            // download a native library to the device in order to do detection.  Usually this
+            // completes before the app is run for the first time.  But if that download has not yet
+            // completed, then the above call will not detect any faces.
+            //
+            // isOperational() can be used to check if the required native library is currently
+            // available.  The detector will automatically become operational once the library
+            // download completes on device.
+            Log.w(TAG, "Face detector dependencies are not yet available.");
+        }
+        Log.d("Clicked","using back");
+        mCameraSource = new CameraSource.Builder(context, detector)
+                .setRequestedPreviewSize(640, 480)
+                .setFacing(CameraSource.CAMERA_FACING_BACK)
+                .setRequestedFps(30.0f)
+                .build();
+    }
     /**
      * Restarts the camera.
      */
