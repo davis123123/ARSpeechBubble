@@ -380,7 +380,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onMissing(FaceDetector.Detections<Face> detectionResults) {
-            mOverlay.remove(mFaceGraphic);
+            //mOverlay.remove(mFaceGraphic);
         }
 
         /**
@@ -511,8 +511,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                    /* mText.setText(null);
                                     mAdapter.addResult(text);
                                     mRecyclerView.smoothScrollToPosition(0);*/
-                                   spoken = true;
-                                   speechText = text;
+                                    spoken = true;
+                                    speechText = text;
                                     try {
                                         mPreview.start(mCameraSource, mGraphicOverlay);
                                     } catch (IOException e) {
@@ -520,6 +520,13 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                     }
                                     Log.d("Text String", "Test: " + text);
                                 } else {
+                                    spoken = true;
+                                    speechText = text;
+                                    try {
+                                        mPreview.start(mCameraSource, mGraphicOverlay);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                     //mText.setText(text);
                                     //Log.d("Text String", "Test: " + text);
                                 }
