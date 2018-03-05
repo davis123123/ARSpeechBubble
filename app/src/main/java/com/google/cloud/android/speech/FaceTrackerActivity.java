@@ -74,6 +74,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private boolean spoken = false;
     private String speechText = "";
     private boolean cameraBF = true;
+    private int faceCount = 0;
 
     private CameraSourcePreview mPreview;
     private GraphicOverlay mGraphicOverlay;
@@ -150,7 +151,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                         //stop timer
                         //handel.removeCallbacks(run);
                         break;
-
                 }
                 return true;
             }
@@ -407,14 +407,15 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onNewItem(int faceId, Face item) {
+            Log.d("Face ID"," " + faceId);
             mFaceGraphic.setId(faceId);
         }
-
         /**
          * Update the position/characteristics of the face within the overlay.
          */
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
+            faceCount++;
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face, spoken, speechText);
         }
@@ -435,6 +436,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onDone() {
+            faceCount--;
             mOverlay.remove(mFaceGraphic);
         }
     }
@@ -451,6 +453,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             //showStatus(true);
             if (mSpeechService != null) {
                 mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
+
             }
         }
 
@@ -468,6 +471,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 mSpeechService.finishRecognizing();
             }
         }
+
+
 
     };
 

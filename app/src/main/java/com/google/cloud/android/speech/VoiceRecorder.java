@@ -20,6 +20,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 
 /**
@@ -212,12 +213,14 @@ public class VoiceRecorder {
 
         private boolean isHearingVoice(byte[] buffer, int size) {
             for (int i = 0; i < size - 1; i += 2) {
+
                 // The buffer has LINEAR16 in little endian.
                 int s = buffer[i + 1];
                 if (s < 0) s *= -1;
                 s <<= 8;
                 s += Math.abs(buffer[i]);
                 if (s > AMPLITUDE_THRESHOLD) {
+                    //Log.d("Sound Sample Rate: ", "" + s);
                     return true;
                 }
             }
