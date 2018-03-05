@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name=".FaceTrackerActivity"
-            android:label="Face Tracker"
+            android:label="AR Speech Bubble"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:screenOrientation="fullSensor">
             <intent-filter>

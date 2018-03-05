@@ -105,7 +105,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         float x = translateX(face.getPosition().x + face.getWidth() / 2);
         float y = translateY(face.getPosition().y + face.getHeight() / 2);
         if(face.getLandmarks().size() > 1) {
-            Log.d("LandMarks: ", "" + face.getLandmarks().size());
+            //Log.d("LandMarks: ", "" + face.getLandmarks().size());
             Landmark leftMLandmark = null;
             Landmark rightMLandmark = null;
             Landmark bottomMLandmark = null;
@@ -127,16 +127,8 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                     canvas.drawCircle(translateX( bottomMLandmark.getPosition().x ) , translateY(bottomMLandmark.getPosition().y) , FACE_POSITION_RADIUS, mFacePositionPaint);
                     canvas.drawText(mSpeechText,translateX( bottomMLandmark.getPosition().x ) , translateY(bottomMLandmark.getPosition().y) + ID_Y_OFFSET, mIdPaint);
                     //hasMouth = true;
-                }//right mouth
+                }//bottom mouth
             }
-
-            /*f(mLandmark != null){
-                canvas.drawCircle( mLandmark.getPosition().x , mLandmark.getPosition().y, FACE_POSITION_RADIUS, mFacePositionPaint);
-            }*/
-
-            //canvas.drawCircle(x, y + (face.getHeight() * 3 / 4), FACE_POSITION_RADIUS, mFacePositionPaint);
-
-            //Log.d("LandMarks: ", "" + mLandmark.getPosition() + " ");
         }
         //canvas.drawText(mSpeechText, x + ID_X_OFFSET, y + ID_Y_OFFSET + (face.getHeight() * 3 / 4), mIdPaint);
         //Log.d("LandMarks: ", "" + face.getLandmarks());
