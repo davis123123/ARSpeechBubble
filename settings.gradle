@@ -1,1 +1,1 @@
-include ':app', ':unitytext'
+include ':app', ':unityplugin'

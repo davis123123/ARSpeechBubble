@@ -132,7 +132,6 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         }
         //canvas.drawText(mSpeechText, x + ID_X_OFFSET, y + ID_Y_OFFSET + (face.getHeight() * 3 / 4), mIdPaint);
         //Log.d("LandMarks: ", "" + face.getLandmarks());
-        ;
 
         //canvas.drawText("happiness: " + String.format("%.2f", face.getIsSmilingProbability()), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
         //canvas.drawText("right eye: " + String.format("%.2f", face.getIsRightEyeOpenProbability()), x + ID_X_OFFSET * 2, y + ID_Y_OFFSET * 2, mIdPaint);
