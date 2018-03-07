@@ -39,13 +39,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private static final float BOX_STROKE_WIDTH = 5.0f;
 
     private static final int COLOR_CHOICES[] = {
-        Color.BLUE,
-        Color.CYAN,
-        Color.GREEN,
-        Color.MAGENTA,
-        Color.RED,
-        Color.WHITE,
-        Color.YELLOW
+        Color.BLUE
     };
     private static int mCurrentColorIndex = 0;
 
@@ -54,8 +48,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private Paint mBoxPaint;
 
     private volatile Face mFace;
+    private volatile Face prevFace;
     private int mFaceId;
     private float mFaceHappiness;
+    Landmark bottomMLandmark = null;
 
     //test stuff
     private String mSpeechText = "";
@@ -89,6 +85,14 @@ class FaceGraphic extends GraphicOverlay.Graphic {
      * relevant portions of the overlay to trigger a redraw.
      */
     void updateFace(Face face, boolean spoken, String speechText) {
+        if(mFace != null) {
+            Log.d("LandMarks: ", "if" );
+            prevFace = mFace;
+        }
+        else {
+            Log.d("LandMarks: ", "else" );
+            prevFace = face;
+        }
         mFace = face;
         mSpeechText = speechText;
         postInvalidate();
@@ -100,6 +104,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     @Override
     public void draw(Canvas canvas) {
         Face face = mFace;
+        Face pFace = prevFace;
         if (face == null) {
             return;
         }
@@ -107,11 +112,20 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         // Draws a circle at the position of the detected face, with the face's track id below.
         float x = translateX(face.getPosition().x + face.getWidth() / 2);
         float y = translateY(face.getPosition().y + face.getHeight() / 2);
+
+        float px = translateX(pFace.getPosition().x + face.getWidth() / 2);
+        float py = translateY(pFace.getPosition().y + face.getHeight() / 2);
+
+        float midx = (x + px) / 2;
+        float midy = (y + py) / 2;
+
+        float movedx = x - midx;
+        float movedy = y - midy;
         if(face.getLandmarks().size() > 1) {
             //Log.d("LandMarks: ", "" + face.getLandmarks().size());
             Landmark leftMLandmark = null;
             Landmark rightMLandmark = null;
-            Landmark bottomMLandmark = null;
+
             //boolean hasMouth = false;
 
             /*for(int i = 0;i < face.getLandmarks().size(); i++){
@@ -134,17 +148,27 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                     //hasMouth = true;
                 }//bottom mouth
             }*/
+            float bx = 0;
+            float by = 0;
             if(face.getLandmarks().get(face.getLandmarks().size()-1).getType() == 0){
-                Log.d("LandMarks: ", "caught" );
+                //Log.d("LandMarks: ", "caught" );
                 bottomMLandmark = face.getLandmarks().get(face.getLandmarks().size()-1);
-                float bx = translateX( bottomMLandmark.getPosition().x );
-                float by =  translateY(bottomMLandmark.getPosition().y);
+                bx = translateX( bottomMLandmark.getPosition().x );
+                by =  translateY(bottomMLandmark.getPosition().y);
                 canvas.drawCircle(bx , by, FACE_POSITION_RADIUS, mFacePositionPaint);
                 canvas.drawText(mSpeechText,bx , by + ID_Y_OFFSET, mIdPaint);
             }
-            Log.d("LandMarks: ", "end" );
+            else{
+                if(bx != 0.0 && by != 0) {
+                    canvas.drawCircle(bx + movedx, by + movedy, FACE_POSITION_RADIUS, mFacePositionPaint);
+                    canvas.drawText(mSpeechText, bx + movedx, by + movedy + ID_Y_OFFSET, mIdPaint);
+                    Log.d("LandMarks: ", "" +
+                            "" + face.getLandmarks().get(face.getLandmarks().size() - 1).getType());
+                }
+            }
+            //Log.d("LandMarks: ", "end" );
         }
-        canvas.drawText(mSpeechText, x , y , mIdPaint);
+        canvas.drawCircle(x , y ,FACE_POSITION_RADIUS,mFacePositionPaint);
         //Log.d("LandMarks: ", "" + face.getLandmarks());
 
         //canvas.drawText("happiness: " + String.format("%.2f", face.getIsSmilingProbability()), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
