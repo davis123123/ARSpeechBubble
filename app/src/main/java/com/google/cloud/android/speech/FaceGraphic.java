@@ -24,6 +24,9 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.Landmark;
 import com.google.cloud.android.speech.camera.GraphicOverlay;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Graphic instance for rendering face position, orientation, and landmarks within an associated
  * graphic overlay view.
@@ -110,7 +113,9 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             Landmark rightMLandmark = null;
             Landmark bottomMLandmark = null;
             //boolean hasMouth = false;
-            for(int i = 0;i < face.getLandmarks().size(); i++){
+
+            /*for(int i = 0;i < face.getLandmarks().size(); i++){
+                Log.d("LandMarks: ", "" + face.getLandmarks().get(i).getType());
                 if (face.getLandmarks().get(i).getType() == 5){
                     leftMLandmark = face.getLandmarks().get(i);
                     canvas.drawCircle(translateX( leftMLandmark.getPosition().x ), translateY(leftMLandmark.getPosition().y) , FACE_POSITION_RADIUS, mFacePositionPaint);
@@ -128,9 +133,18 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                     canvas.drawText(mSpeechText,translateX( bottomMLandmark.getPosition().x ) , translateY(bottomMLandmark.getPosition().y) + ID_Y_OFFSET, mIdPaint);
                     //hasMouth = true;
                 }//bottom mouth
+            }*/
+            if(face.getLandmarks().get(face.getLandmarks().size()-1).getType() == 0){
+                Log.d("LandMarks: ", "caught" );
+                bottomMLandmark = face.getLandmarks().get(face.getLandmarks().size()-1);
+                float bx = translateX( bottomMLandmark.getPosition().x );
+                float by =  translateY(bottomMLandmark.getPosition().y);
+                canvas.drawCircle(bx , by, FACE_POSITION_RADIUS, mFacePositionPaint);
+                canvas.drawText(mSpeechText,bx , by + ID_Y_OFFSET, mIdPaint);
             }
+            Log.d("LandMarks: ", "end" );
         }
-        //canvas.drawText(mSpeechText, x + ID_X_OFFSET, y + ID_Y_OFFSET + (face.getHeight() * 3 / 4), mIdPaint);
+        canvas.drawText(mSpeechText, x , y , mIdPaint);
         //Log.d("LandMarks: ", "" + face.getLandmarks());
 
         //canvas.drawText("happiness: " + String.format("%.2f", face.getIsSmilingProbability()), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
