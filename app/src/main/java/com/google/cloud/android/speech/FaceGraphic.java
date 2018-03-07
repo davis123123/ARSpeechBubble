@@ -51,8 +51,10 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private volatile Face prevFace;
     private int mFaceId;
     private float mFaceHappiness;
-    Landmark bottomMLandmark = null;
 
+    Landmark bottomMLandmark = null;
+    float bx = 0;
+    float by = 0;
     //test stuff
     private String mSpeechText = "";
 
@@ -86,11 +88,11 @@ class FaceGraphic extends GraphicOverlay.Graphic {
      */
     void updateFace(Face face, boolean spoken, String speechText) {
         if(mFace != null) {
-            Log.d("LandMarks: ", "if" );
+            //Log.d("LandMarks: ", "if" );
             prevFace = mFace;
         }
         else {
-            Log.d("LandMarks: ", "else" );
+            //Log.d("LandMarks: ", "else" );
             prevFace = face;
         }
         mFace = face;
@@ -148,10 +150,8 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                     //hasMouth = true;
                 }//bottom mouth
             }*/
-            float bx = 0;
-            float by = 0;
             if(face.getLandmarks().get(face.getLandmarks().size()-1).getType() == 0){
-                //Log.d("LandMarks: ", "caught" );
+                Log.d("LandMarks: ", "caught" );
                 bottomMLandmark = face.getLandmarks().get(face.getLandmarks().size()-1);
                 bx = translateX( bottomMLandmark.getPosition().x );
                 by =  translateY(bottomMLandmark.getPosition().y);
@@ -159,12 +159,12 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                 canvas.drawText(mSpeechText,bx , by + ID_Y_OFFSET, mIdPaint);
             }
             else{
-                if(bx != 0.0 && by != 0) {
+
                     canvas.drawCircle(bx + movedx, by + movedy, FACE_POSITION_RADIUS, mFacePositionPaint);
                     canvas.drawText(mSpeechText, bx + movedx, by + movedy + ID_Y_OFFSET, mIdPaint);
                     Log.d("LandMarks: ", "" +
                             "" + face.getLandmarks().get(face.getLandmarks().size() - 1).getType());
-                }
+
             }
             //Log.d("LandMarks: ", "end" );
         }
