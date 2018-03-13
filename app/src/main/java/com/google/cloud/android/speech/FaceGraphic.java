@@ -127,7 +127,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             //Log.d("LandMarks: ", "" + face.getLandmarks().size());
             Landmark leftMLandmark = null;
             Landmark rightMLandmark = null;
-
+            Log.d("Eulers ", face.getEulerY() + " " + face.getEulerZ());
             //boolean hasMouth = false;
 
             /*for(int i = 0;i < face.getLandmarks().size(); i++){
@@ -171,7 +171,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         canvas.drawCircle(x , y ,FACE_POSITION_RADIUS,mFacePositionPaint);
         //Log.d("LandMarks: ", "" + face.getLandmarks());
 
-        //canvas.drawText("happiness: " + String.format("%.2f", face.getIsSmilingProbability()), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
+        canvas.drawText("Eulers: " + face.getEulerY() + " " + face.getEulerZ(), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
         //canvas.drawText("right eye: " + String.format("%.2f", face.getIsRightEyeOpenProbability()), x + ID_X_OFFSET * 2, y + ID_Y_OFFSET * 2, mIdPaint);
         //canvas.drawText("left eye: " + String.format("%.2f", face.getIsLeftEyeOpenProbability()), x - ID_X_OFFSET*2, y - ID_Y_OFFSET*2, mIdPaint);
 

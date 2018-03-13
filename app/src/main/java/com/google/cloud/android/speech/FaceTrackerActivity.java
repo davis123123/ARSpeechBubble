@@ -200,6 +200,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .setMode(1)
                 .build();
 
         detector.setProcessor(
@@ -228,6 +229,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private void createCameraSourceBack() {
         cameraBF = false;
         Context context = getApplicationContext();
+        
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .build();
@@ -399,7 +401,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
         GraphicFaceTracker(GraphicOverlay overlay) {
             mOverlay = overlay;
-            mFaceGraphic = new FaceGraphic(overlay);
+            if(faceCount < 1)
+                mFaceGraphic = new FaceGraphic(overlay);
         }
 
         /**
@@ -407,6 +410,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onNewItem(int faceId, Face item) {
+            faceCount++;
             Log.d("Face ID"," " + faceId);
             mFaceGraphic.setId(faceId);
         }
@@ -415,8 +419,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
-            faceCount++;
+            if(faceCount < 1)
+                faceCount++;
+            Log.d("Facecount ", " " + faceCount + " " + face.getPosition());
             mOverlay.add(mFaceGraphic);
+
             mFaceGraphic.updateFace(face, spoken, speechText);
         }
 
@@ -427,7 +434,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onMissing(FaceDetector.Detections<Face> detectionResults) {
-            //mOverlay.remove(mFaceGraphic);
+            faceCount--;
+            mOverlay.remove(mFaceGraphic);
+            Log.d("Missing ", " ");
         }
 
         /**
@@ -436,7 +445,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onDone() {
-            faceCount--;
             mOverlay.remove(mFaceGraphic);
         }
     }
