@@ -7,3 +7,4 @@ Please use a physical phone to run the app, not an emulator. (unless you have co
 
 I am open to any suggestions, optimizations, bugs, or issues with Google credentials. Feel free to play around.
 
+3D graphics will be uploaded and intergrated once I stabilize mouth detection abit more. Stay Tuned!
