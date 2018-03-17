@@ -112,66 +112,28 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         }
 
         // Draws a circle at the position of the detected face, with the face's track id below.
+        float Ey = face.getEulerY();
+        float Ez = face.getEulerZ();
+
         float x = translateX(face.getPosition().x + face.getWidth() / 2);
         float y = translateY(face.getPosition().y + face.getHeight() / 2);
-
-        float px = translateX(pFace.getPosition().x + face.getWidth() / 2);
-        float py = translateY(pFace.getPosition().y + face.getHeight() / 2);
-
-        float midx = (x + px) / 2;
-        float midy = (y + py) / 2;
-
-        float movedx = x - midx;
-        float movedy = y - midy;
-        if(face.getLandmarks().size() > 1) {
-            //Log.d("LandMarks: ", "" + face.getLandmarks().size());
-            Landmark leftMLandmark = null;
-            Landmark rightMLandmark = null;
-            Log.d("Eulers ", face.getEulerY() + " " + face.getEulerZ());
-            //boolean hasMouth = false;
-
-            /*for(int i = 0;i < face.getLandmarks().size(); i++){
-                Log.d("LandMarks: ", "" + face.getLandmarks().get(i).getType());
-                if (face.getLandmarks().get(i).getType() == 5){
-                    leftMLandmark = face.getLandmarks().get(i);
-                    canvas.drawCircle(translateX( leftMLandmark.getPosition().x ), translateY(leftMLandmark.getPosition().y) , FACE_POSITION_RADIUS, mFacePositionPaint);
-                    //hasMouth = true;
-                }//left mouth
-                if (face.getLandmarks().get(i).getType() == 11){
-                    rightMLandmark = face.getLandmarks().get(i);
-                    canvas.drawCircle(translateX( rightMLandmark.getPosition().x ) , translateY(rightMLandmark.getPosition().y) , FACE_POSITION_RADIUS, mFacePositionPaint);
-                    //hasMouth = true;
-                }//right mouth
-
-                if (face.getLandmarks().get(i).getType() == 0){
-                    bottomMLandmark = face.getLandmarks().get(i);
-                    canvas.drawCircle(translateX( bottomMLandmark.getPosition().x ) , translateY(bottomMLandmark.getPosition().y) , FACE_POSITION_RADIUS, mFacePositionPaint);
-                    canvas.drawText(mSpeechText,translateX( bottomMLandmark.getPosition().x ) , translateY(bottomMLandmark.getPosition().y) + ID_Y_OFFSET, mIdPaint);
-                    //hasMouth = true;
-                }//bottom mouth
-            }*/
-            if(face.getLandmarks().get(face.getLandmarks().size()-1).getType() == 0){
-                Log.d("LandMarks: ", "caught" );
-                bottomMLandmark = face.getLandmarks().get(face.getLandmarks().size()-1);
-                bx = translateX( bottomMLandmark.getPosition().x );
-                by =  translateY(bottomMLandmark.getPosition().y);
-                canvas.drawCircle(bx , by, FACE_POSITION_RADIUS, mFacePositionPaint);
-                canvas.drawText(mSpeechText,bx , by + ID_Y_OFFSET, mIdPaint);
-            }
-            else{
-
-                    canvas.drawCircle(bx + movedx, by + movedy, FACE_POSITION_RADIUS, mFacePositionPaint);
-                    canvas.drawText(mSpeechText, bx + movedx, by + movedy + ID_Y_OFFSET, mIdPaint);
-                    Log.d("LandMarks: ", "" +
-                            "" + face.getLandmarks().get(face.getLandmarks().size() - 1).getType());
-
-            }
-            //Log.d("LandMarks: ", "end" );
+        float py = 0;
+        if(Ey < 0){
+            py = translateY(face.getPosition().y + Ez + face.getHeight() / 2);
         }
+        else{
+            py = translateY(face.getPosition().y - Ez + face.getHeight() / 2);
+        }
+
+        //float px = translateX(face.getPosition().x + face.getWidth() / 2);
+        float px = translateX(face.getPosition().x + Ey + face.getWidth() / 2);
+
         canvas.drawCircle(x , y ,FACE_POSITION_RADIUS,mFacePositionPaint);
+        canvas.drawCircle(px, py + ( face.getHeight() * 3 / 4), FACE_POSITION_RADIUS, mFacePositionPaint);
+        canvas.drawText(mSpeechText, px + ID_X_OFFSET, py + ID_Y_OFFSET + (face.getHeight() * 3 / 4), mIdPaint);
         //Log.d("LandMarks: ", "" + face.getLandmarks());
 
-        canvas.drawText("Eulers: " + face.getEulerY() + " " + face.getEulerZ(), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
+        //canvas.drawText("Eulers: " + face.getEulerY() + " " + face.getEulerZ(), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
         //canvas.drawText("right eye: " + String.format("%.2f", face.getIsRightEyeOpenProbability()), x + ID_X_OFFSET * 2, y + ID_Y_OFFSET * 2, mIdPaint);
         //canvas.drawText("left eye: " + String.format("%.2f", face.getIsLeftEyeOpenProbability()), x - ID_X_OFFSET*2, y - ID_Y_OFFSET*2, mIdPaint);
 
