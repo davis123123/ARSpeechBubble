@@ -32,6 +32,7 @@ import android.util.Log;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.android.speech.handlers.CredentialsHandler;
 import com.google.cloud.speech.v1.RecognitionAudio;
 import com.google.cloud.speech.v1.RecognitionConfig;
 import com.google.cloud.speech.v1.RecognizeRequest;
@@ -45,16 +46,19 @@ import com.google.cloud.speech.v1.StreamingRecognizeRequest;
 import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import io.grpc.CallOptions;
@@ -107,6 +111,8 @@ public class SpeechService extends Service {
     private volatile AccessTokenTask mAccessTokenTask;
     private SpeechGrpc.SpeechStub mApi;
     private static Handler mHandler;
+
+    private static String credentialResult = "";
 
     private final StreamObserver<StreamingRecognizeResponse> mResponseObserver
             = new StreamObserver<StreamingRecognizeResponse>() {
@@ -182,7 +188,21 @@ public class SpeechService extends Service {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler();
+        getCred();
         fetchAccessToken();
+    }
+
+    private void getCred(){
+        CredentialsHandler credentialsHandler =  new CredentialsHandler();
+        Log.d( "Cd", ""+ "HERE");
+        try {
+
+            credentialResult = credentialsHandler.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -346,12 +366,7 @@ public class SpeechService extends Service {
                 }
             }
 
-            // ***** WARNING *****
-            // In this sample, we load the credential from a JSON file stored in a raw resource
-            // folder of this client app. You should never do this in your app. Instead, store
-            // the file in your server and obtain an access token from there.
-            // *******************
-            final InputStream stream = getResources().openRawResource(R.raw.credential);
+            final InputStream stream =  new ByteArrayInputStream(credentialResult.getBytes(StandardCharsets.UTF_8));;
             try {
                 final GoogleCredentials credentials = GoogleCredentials.fromStream(stream)
                         .createScoped(SCOPE);
