@@ -102,32 +102,12 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+
         if (rc == PackageManager.PERMISSION_GRANTED) {
             createCameraSource();
         } else {
             requestCameraPermission();
         }
-
-
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                //mCameraSource.stop();
-                //mCameraSource.release();
-                int rc = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
-                if (rc == PackageManager.PERMISSION_GRANTED) {
-                    createCameraSourceBack();
-                } else {
-                    requestCameraPermission();
-                }
-                //Toast.makeText(getApplicationContext(),"TOUCHED AND WORKS!",Toast.LENGTH_LONG).show();
-                Log.d("Clicked","YES");
-            }
-        };
-
-
-
-        final Handler handel = new Handler();
 
         mLinearLayout.setOnTouchListener(new View.OnTouchListener() {
 
@@ -166,7 +146,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private void requestCameraPermission() {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");
 
-        final String[] permissions = new String[]{Manifest.permission.CAMERA};
+        final String[] permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA};
 
         if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.CAMERA)) {
@@ -190,6 +172,33 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 .show();
     }
 
+
+    private void requestAudioPermission() {
+        Log.w(TAG, "Audio permission is not granted. Requesting permission");
+
+        final String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
+
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.RECORD_AUDIO)) {
+            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
+            return;
+        }
+
+        final Activity thisActivity = this;
+
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityCompat.requestPermissions(thisActivity, permissions,
+                        RC_HANDLE_CAMERA_PERM);
+            }
+        };
+
+        Snackbar.make(mGraphicOverlay, R.string.permission_message,
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.ok, listener)
+                .show();
+    }
     /**
      * Creates and starts the camera.  Note that this uses a higher resolution in comparison
      * to other detection examples to enable the barcode detector to detect small barcodes
@@ -305,7 +314,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+        /*if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
             if (permissions.length == 1 && grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startVoiceRecorder();
@@ -314,7 +323,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+        }*/
 
         if (requestCode != RC_HANDLE_CAMERA_PERM) {
             Log.d(TAG, "Got unexpected permission result: " + requestCode);
@@ -325,6 +334,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
+            startVoiceRecorder();
             createCameraSource();
             return;
         }
@@ -401,7 +411,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
         GraphicFaceTracker(GraphicOverlay overlay) {
             mOverlay = overlay;
-            mFaceGraphic = new FaceGraphic(overlay);
+
+                mFaceGraphic = new FaceGraphic(overlay);
         }
 
         /**
@@ -433,7 +444,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          */
         @Override
         public void onMissing(FaceDetector.Detections<Face> detectionResults) {
-            faceCount--;
+            if(faceCount > 0)
+                faceCount = 0;
             mOverlay.remove(mFaceGraphic);
             Log.d("Missing ", " ");
         }

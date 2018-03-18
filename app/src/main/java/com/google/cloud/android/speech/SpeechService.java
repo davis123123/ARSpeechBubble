@@ -112,7 +112,7 @@ public class SpeechService extends Service {
     private SpeechGrpc.SpeechStub mApi;
     private static Handler mHandler;
 
-    private static String credentialResult = "";
+    private String credentialResult = "";
 
     private final StreamObserver<StreamingRecognizeResponse> mResponseObserver
             = new StreamObserver<StreamingRecognizeResponse>() {
@@ -188,13 +188,12 @@ public class SpeechService extends Service {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler();
+        //fetchAccessToken();
         getCred();
-        fetchAccessToken();
     }
 
     private void getCred(){
         CredentialsHandler credentialsHandler =  new CredentialsHandler();
-        Log.d( "Cd", ""+ "HERE");
         try {
 
             credentialResult = credentialsHandler.execute().get();
@@ -203,6 +202,8 @@ public class SpeechService extends Service {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        Log.d( "Cd", ""+ credentialResult);
+        fetchAccessToken();
     }
 
     @Override
@@ -366,7 +367,8 @@ public class SpeechService extends Service {
                 }
             }
 
-            final InputStream stream =  new ByteArrayInputStream(credentialResult.getBytes(StandardCharsets.UTF_8));;
+            final InputStream stream = new ByteArrayInputStream(credentialResult.getBytes(StandardCharsets.UTF_8));
+
             try {
                 final GoogleCredentials credentials = GoogleCredentials.fromStream(stream)
                         .createScoped(SCOPE);
