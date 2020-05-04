@@ -1,6 +1,11 @@
 # ARSpeechBubble
 Augmented Reality with Speech to Text features for Android platform
 
+I used GRPC to livestream Google Text to Speech API.
+I then used Google facial recoginition API to identify position of the face. 
+In order to obtain the position of the mouth I used Euler's coordinates from Google Facial recognition
+to calculate the conture/angle of the face, which I then used to mark the moouth region.
+
 Should be able to start up by cloning the repo and running it through Android Studio.
 
 No prereqs other than installing Android Studio
